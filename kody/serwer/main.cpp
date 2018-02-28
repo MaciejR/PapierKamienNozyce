@@ -68,6 +68,11 @@ struct Polaczenie{
     struct sockaddr_in adresPolaczenia;
 };
 
+struct Glos{
+    int wybor;
+    int iloscGlosow;
+};
+
 
 
 vector <Gracz> listaGraczy;
@@ -123,7 +128,7 @@ void wyswietlInformacje(string informacja, bool pokazDate = true){
 
 int uzyskajPozycjeGraczaNaLiscie(int id){ // zwraca pozycje gracza; -1 gdy nie znaleziono
 
-    for (int i=listaGraczy.size()-1; i>=0; i--){
+    for (int i= (int) listaGraczy.size()-1; i>=0; i--){
         if (listaGraczy.at(i).id == id){
             return i;
         }
@@ -271,9 +276,8 @@ int zamknijPolaczenieGracza( int id ){ // zwraca : 0 - ok, -1 error
             }
         }
     }
-    else{
-        return -1;
-    }
+
+    return -1;
 
 }
 
@@ -289,7 +293,6 @@ int wyslijWiadomosc(int nSocket, string wiadomoscString){ // zwraca : wartosc fu
 
         int dlugoscWiadomosci = sizeof (wiadomosc);
         int wyslaneBity;
-
 
         wyslaneBity = send(nSocket, wiadomosc, dlugoscWiadomosci, 0 );
 
@@ -319,7 +322,7 @@ int wyslijWiadomoscDoGracza(int id, string wiadomoscString ){ // zwraca : wartos
 }
 
 int wyslijDoWszystkich(string wiadomoscString){ // zwraca : 0
-    for (int i=listaGraczy.size()-1; i>=0; i--){
+    for (int i= (int) listaGraczy.size()-1; i>=0; i--){
         if (listaGraczy.at(i).socketGracza > -1){
 
             wyslijWiadomoscDoGracza(listaGraczy.at(i).id, wiadomoscString);
@@ -408,7 +411,7 @@ int wyslijInformacjeOGraczuDoWszystkich(){ //zwraca 0
 
 int rozlaczSocket (int nSocket){ //zwraca 0
 
-    for (int i=0; i<listaGraczy.size(); i++){
+    for (int i=0; i< (int) listaGraczy.size(); i++){
         if (listaGraczy.at(i).socketGracza == nSocket){
             listaGraczy.erase(listaGraczy.begin() + i);
             wyswietlInformacje("INFO: Usunieto gracza z listy; Socket: " + to_string(nSocket));
@@ -460,14 +463,14 @@ string odbierzWiadomosc(int nSocket){ // zwraca : wiadomosc z komunikatu (string
 
 }
 
-int zaloguj (string nick, string haslo, int socketGracz, struct sockaddr_in adresGracz){ // zwraca : 0 - ok, -1 error
+int zaloguj (string nick, string haslo, int socketGracz, struct sockaddr_in adresGracz){ // zwraca : 0 - ok
 
     bool czySocketZostalDodany = false;
     int idGracza = -1;
 
 	if (wczytajGracza("data/baza_graczy.txt", nick, haslo) == 0){
 
-        for (int i=listaGraczy.size()-1; i>=0; i--){
+        for (int i= (int) listaGraczy.size()-1; i>=0; i--){
 
             if ( ( listaGraczy.at(i).nick == nick) && (listaGraczy.at(i).haslo == haslo) ){
 
@@ -491,22 +494,20 @@ int zaloguj (string nick, string haslo, int socketGracz, struct sockaddr_in adre
 		wyslijWiadomoscDoGracza( idGracza, "Zaloguj:info=ok" );
 		wyslijInformacjeOPartiiDoGracza( idGracza );
 		wyslijInformacjeOGraczuDoGracza( idGracza );
-
-		return 0;
 	}
 	else{
 
 		wyswietlInformacje("Bledne logowanie gracza: " + nick);
 
 		wyslijWiadomosc(socketGracz, "Zaloguj:info=error");
-
-		return 0;
 	}
+
+	return 0;
 }
 
 void przyznajPunkty(int zwycieskaDruzyna, int zwycieskiGlos, int przegranyGlos){
 
-    for (int i=0; i<listaGraczy.size(); i++){
+    for (int i=0; i< (int) listaGraczy.size(); i++){
 
         if ((listaGraczy.at(i).numerDruzyny == zwycieskaDruzyna) && (listaGraczy.at(i).coWybral == zwycieskiGlos)){
             listaGraczy.at(i).liczbaPunktow += 1;
@@ -522,7 +523,7 @@ int przypiszWyborDoGracza (int wybor, int nSocket){ //return 0 - ok; -1 error
 
     if ( (wybor >= -1) && (wybor <= 2) ){
 
-        for (int i=0; i < listaGraczy.size(); i++){
+        for (int i=0; i < (int) listaGraczy.size(); i++){
             if (listaGraczy.at(i).socketGracza == nSocket){
 
                 listaGraczy.at(i).coWybral = wybor;
@@ -544,7 +545,7 @@ int przypiszWyborDoGracza (int wybor, int nSocket){ //return 0 - ok; -1 error
 int przerobWiadomoscNaFunkcje( string wiadomoscString, int nSocket,  sockaddr_in nAdres ){ //return wartosc funkcji; -1 error
 
     if ( wiadomoscString != "" ){
-        int rozmiarWiadomosci = wiadomoscString.size();
+        int rozmiarWiadomosci = (int) wiadomoscString.size();
         char wiadomosc[rozmiarWiadomosci];
 
         for (int i=0; i < rozmiarWiadomosci; i++){
@@ -605,15 +606,15 @@ int przerobWiadomoscNaFunkcje( string wiadomoscString, int nSocket,  sockaddr_in
 
         wyswietlInformacje("Funkcja: " + funkcja);
 
-        for (int k=0; k < zmienne.size(); k++){
+        for (int k=0; k < (int) zmienne.size(); k++){
 
-            if (k <= wartosci.size()){
+            if (k <= (int) wartosci.size()){
                 wyswietlInformacje(zmienne.at(k) + "=" + wartosci.at(k) + ";");
             }
         }
 
         if (funkcja == "Zaloguj"){
-            if ( (zmienne.size() == wartosci.size() ) && (zmienne.size() == 2) && (zmienne.at(0) == "nick") && (zmienne.at(1) == "haslo") ){
+            if ( (zmienne.size() == wartosci.size() ) && ((int)zmienne.size() == 2) && (zmienne.at(0) == "nick") && (zmienne.at(1) == "haslo") ){
                 return zaloguj( wartosci.at(0), wartosci.at(1), nSocket, nAdres);
             }
             else{
@@ -622,7 +623,7 @@ int przerobWiadomoscNaFunkcje( string wiadomoscString, int nSocket,  sockaddr_in
             }
         }
         else if (funkcja == "ObecnaPartia"){
-             if ( (zmienne.size() == wartosci.size() ) && (zmienne.size() == 1) && (zmienne.at(0) == "wybor") ){
+             if ( (zmienne.size() == wartosci.size() ) && ((int)zmienne.size() == 1) && (zmienne.at(0) == "wybor") ){
                 return przypiszWyborDoGracza( atoi( wartosci.at(0).c_str() ), nSocket);
             }
             else{
@@ -764,7 +765,7 @@ void inicjujPartie(){
 
 	wyswietlInformacje("Inicjowanie nowej partii...");
 
-	for (int k = 0; k < listaGraczy.size(); k++){
+	for (int k = 0; k < (int) listaGraczy.size(); k++){
         listaGraczy.at(k).coWybral = -1;
 	}
 
@@ -797,8 +798,8 @@ void zakonczPartie(){ //podliczenie glosow, okreslenie zwycieskiego przedmotu, w
 	int zwycieskiGlos[2];
 	int zwycieskaDruzyna = -1;
 
-	vector <int> zwycieskieGlosy_0;
-	vector <int> zwycieskieGlosy_1;
+	vector <Glos> zwycieskieGlosy_0;
+	vector <Glos> zwycieskieGlosy_1;
 
 	for (int i=0; i<2; i++){ //przypisanie zer
 		max[i] = 0;
@@ -822,20 +823,41 @@ void zakonczPartie(){ //podliczenie glosow, okreslenie zwycieskiego przedmotu, w
 		}
 	}
 
-	for (auto x: iloscGlosow[0]){ //znalezienie zwycieskich glosow druzyn
-		if (max[0] == x){
-			zwycieskieGlosy_0.push_back(x);
+	for (int i=0; i < 3; i++ ){ //znalezienie zwycieskich glosow druzyn
+		if ( max[0] == iloscGlosow[0][i] ){
+			zwycieskieGlosy_0.push_back(Glos() );
+            int index =  zwycieskieGlosy_0.size() -1;
+            zwycieskieGlosy_0.at(index).wybor = i;
+            zwycieskieGlosy_0.at(index).iloscGlosow = iloscGlosow[0][i];
 		}
 	}
 
-	for (auto x: iloscGlosow[1]){
-		if (max[1] == x){
-			zwycieskieGlosy_1.push_back(x);
+	for (int i=0; i < 3; i++ ){ //znalezienie zwycieskich glosow druzyn
+		if ( max[1] == iloscGlosow[1][i] ){
+			zwycieskieGlosy_1.push_back(Glos() );
+            int index =  zwycieskieGlosy_1.size() -1;
+            zwycieskieGlosy_1.at(index).wybor = i;
+            zwycieskieGlosy_1.at(index).iloscGlosow = iloscGlosow[1][i];
 		}
 	}
 
-	zwycieskiGlos[0] = rand() % zwycieskieGlosy_0.size();
-	zwycieskiGlos[1] = rand() % zwycieskieGlosy_1.size();
+	wyswietlInformacje("Zwycieskie glosy <punkty> druzyny 0: ");
+
+    for (auto x: zwycieskieGlosy_0){
+        wyswietlInformacje(to_string(x.wybor) + ": <" + to_string(x.iloscGlosow) + ">" );
+	}
+
+	wyswietlInformacje("Zwycieskie glosy <punkty> druzyny 1: ");
+
+    for (auto x: zwycieskieGlosy_1){
+        wyswietlInformacje( to_string(x.wybor) + ": <" + to_string(x.iloscGlosow) + ">" );
+	}
+
+	int wyborDruzyny0 = rand() % zwycieskieGlosy_0.size();
+	int wyborDruzyny1 = rand() % zwycieskieGlosy_1.size();
+
+	zwycieskiGlos[0] = zwycieskieGlosy_0.at( wyborDruzyny0 ).wybor;
+	zwycieskiGlos[1] = zwycieskieGlosy_1.at( wyborDruzyny1 ).wybor;
 
 
 	wyswietlInformacje("---Druzyna 0---Max punktow: " + to_string(max[0]) );
