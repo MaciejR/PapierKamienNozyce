@@ -1,0 +1,2 @@
+0;user;password;0;1;
+1;user2;password2;1;1
