@@ -348,7 +348,7 @@ void inicjujMenuGUI(){
 		      G_CALLBACK (akcjaPrzycisk), (gpointer) 0);
 
     gtk_fixed_put (GTK_FIXED (fixed1), button, 0, 450);
-    image = gtk_image_new_from_file ("0.png");
+    image = gtk_image_new_from_file ("grafika/0.png");
     gtk_button_set_image (GTK_BUTTON (button), image);
 
     gtk_widget_show (button);
@@ -359,7 +359,7 @@ void inicjujMenuGUI(){
     G_CALLBACK (akcjaPrzycisk), (gpointer) 1);
 
     gtk_fixed_put (GTK_FIXED (fixed1), button, 200, 450);
-    image = gtk_image_new_from_file ("1.png");
+    image = gtk_image_new_from_file ("grafika/1.png");
     gtk_button_set_image (GTK_BUTTON (button), image);
 
     gtk_widget_show (button);
@@ -371,7 +371,7 @@ void inicjujMenuGUI(){
 		      G_CALLBACK (akcjaPrzycisk), (gpointer) 2);
 
     gtk_fixed_put (GTK_FIXED (fixed1), button, 400, 450);
-    image = gtk_image_new_from_file ("2.png");
+    image = gtk_image_new_from_file ("grafika/2.png");
     gtk_button_set_image (GTK_BUTTON (button), image);
 
     gtk_widget_show (button);
@@ -635,7 +635,7 @@ XInitThreads(); //Włączenie wątków dla GTK
 
 //styl Css dla GUI
     GtkCssProvider *cssProvider = gtk_css_provider_new();
-    gtk_css_provider_load_from_path(cssProvider, "theme.css", NULL);
+    gtk_css_provider_load_from_path(cssProvider, "grafika/theme.css", NULL);
       gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
                                               GTK_STYLE_PROVIDER(cssProvider),
                                               GTK_STYLE_PROVIDER_PRIORITY_USER);
